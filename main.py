@@ -145,8 +145,7 @@ while running:
         if restart_label_rect.collidepoint(mouse) and pygame.mouse.get_pressed()[0]:
             gameplay = True
             player.rect.x = 100
-            enemies[0].rect.x = 650
-            enemies[1].rect.x = 900
+            enemies = [Enemy(650, 350, 301, 493, 7), Enemy(900, 350, 301, 493, 25)]
 
 
     for event in pygame.event.get():
