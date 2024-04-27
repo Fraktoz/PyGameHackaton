@@ -1,6 +1,8 @@
 import pygame
 from win32api import GetSystemMetrics
 from pygame.locals import *
+
+import classes
 from classes import Enemy, Player
 
 pygame.init()
@@ -109,6 +111,7 @@ while running:
                 if sword_hitbox.colliderect(Enemy.rect) and Enemy.alive:
                     # Уничтожаем врага
                     Enemy.kill()
+                    enemies.pop(enemies.index(Enemy))
 
         if is_jumping:
             if gravity >= -10:
@@ -145,7 +148,10 @@ while running:
         if restart_label_rect.collidepoint(mouse) and pygame.mouse.get_pressed()[0]:
             gameplay = True
             player.rect.x = 100
-            enemies = [Enemy(650, 350, 301, 493, 7), Enemy(900, 350, 301, 493, 25)]
+            for Enemy in enemies:
+                Enemy.kill()
+            enemies = [(classes.Enemy(650, 350, 301, 493, 7)),(classes.Enemy(900, 350, 301, 493, 25))]
+
 
 
     for event in pygame.event.get():
