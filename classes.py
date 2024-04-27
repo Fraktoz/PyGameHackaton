@@ -11,13 +11,11 @@ class Enemy:
             pygame.image.load('images/enemy/walk_right/1.png').convert_alpha(),
             pygame.image.load('images/enemy/walk_right/2.png').convert_alpha(),
             pygame.image.load('images/enemy/walk_right/3.png').convert_alpha(),
-            pygame.image.load('images/enemy/walk_right/4.png').convert_alpha()
         ]
         self.walk_left = [
             pygame.image.load('images/enemy/walk_left/1.png').convert_alpha(),
             pygame.image.load('images/enemy/walk_left/2.png').convert_alpha(),
             pygame.image.load('images/enemy/walk_left/3.png').convert_alpha(),
-            pygame.image.load('images/enemy/walk_left/4.png').convert_alpha()
         ]
 
     def move(self):
@@ -62,17 +60,26 @@ class Player:
         self.direction = 'right'
         self.stay = True
         self.frame_index = 0
+        self.attack_index = 0
         self.walk_right = [
             pygame.image.load('images/player/walk_right/1.png').convert_alpha(),
             pygame.image.load('images/player/walk_right/2.png').convert_alpha(),
             pygame.image.load('images/player/walk_right/3.png').convert_alpha(),
-            pygame.image.load('images/player/walk_right/4.png').convert_alpha()
         ]
         self.walk_left = [
             pygame.image.load('images/player/walk_left/1.png').convert_alpha(),
             pygame.image.load('images/player/walk_left/2.png').convert_alpha(),
             pygame.image.load('images/player/walk_left/3.png').convert_alpha(),
-            pygame.image.load('images/player/walk_left/4.png').convert_alpha()
+        ]
+        self.right_attack = [
+            pygame.image.load(('images/player/right_attack/1.png')).convert_alpha(),
+            pygame.image.load(('images/player/right_attack/2.png')).convert_alpha(),
+            pygame.image.load(('images/player/right_attack/3.png')).convert_alpha(),
+        ]
+        self.left_attack = [
+            pygame.image.load(('images/player/left_attack/1.png')).convert_alpha(),
+            pygame.image.load(('images/player/left_attack/2.png')).convert_alpha(),
+            pygame.image.load(('images/player/left_attack/3.png')).convert_alpha(),
         ]
 
     def move(self, dx, dy):
@@ -99,6 +106,12 @@ class Player:
             screen.blit(self.walk_right[self.frame_index], (self.rect.x, self.rect.y))
         else:
             screen.blit(self.walk_left[self.frame_index], (self.rect.x, self.rect.y))
+
+    def draw_attack(self, screen):
+        if self.direction == 'right' and self.is_attacking == True:
+            screen.blit(self.right_attack[self.attack_index], (self.rect.x, self.rect.y))
+        elif self.direction == 'left' and self.is_attacking == True:
+            screen.blit(self.left_attack[self.attack_index], (self.rect.x, self.rect.y))
 
     def update(self):
         self.animation()

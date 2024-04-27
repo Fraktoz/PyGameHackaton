@@ -5,12 +5,12 @@ from pygame_widgets.button import Button
 from pygame_widgets.toggle import Toggle
 from win32api import GetSystemMetrics
 
-import start
 
 
 class MainMenu:
 
     def __init__(self):
+        self.run = None
         self.toggle = None
         self.BackButton = None
         self.OptionsButton = None
@@ -50,7 +50,7 @@ class MainMenu:
             pressedColour=(0, 200, 20),
             radius=20,
             onClick=lambda:
-            start.play()  # Функция при нажатии
+            self.ClPlay()  # Функция при нажатии
         )
         self.QuitButton = Button(
             self.screen,
@@ -120,6 +120,11 @@ class MainMenu:
         self.toggle.hide()
         self.BackButton.hide()
 
+    def ClPlay(self):
+        from start import play
+        self.run = False
+        play()
+
     @staticmethod
     def quite():
         quit()
@@ -143,8 +148,6 @@ class MainMenu:
         self.toggle.hide()
         self.PlayButton.show()
         self.text = self.font.render('', True, (255, 255, 255))
-
-
 
     def toggleMusic(self):
         if pygame.mixer.music.get_busy():

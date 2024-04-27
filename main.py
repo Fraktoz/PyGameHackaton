@@ -3,247 +3,142 @@ from win32api import GetSystemMetrics
 from pygame.locals import *
 
 import classes
-from classes import Enemy, Player
+from classes import *
 
-pygame.init()
-res = (GetSystemMetrics(0), GetSystemMetrics(1))
-w = GetSystemMetrics(0)
-h = GetSystemMetrics(1)
-scale_x = w / 1920
-scale_y = h / 1080
-screen = pygame.display.set_mode(res, FULLSCREEN, HWSURFACE | DOUBLEBUF | RESIZABLE)
-pygame.display.set_caption('PygamePlatformer')
-# icon = pygame.image.load('icon.png')
-# pygame.display.set_icon(icon)
-clock = pygame.time.Clock()
-gameplay = True
-gravity = 10
-is_jumping = False
-label = pygame.font.SysFont('Arial', 50)
-lose_label = label.render('Game Over', False, (0, 0, 0))
-restart_label = label.render('Restart', True, (0, 0, 0))
-restart_label_rect = restart_label.get_rect(topleft=(100, 100))
 
-player = Player(100, 350, 15, 301, 493)
-enemies = [Enemy(650, 350, 301, 493, 7), Enemy(900, 350, 301, 493, 25)]
+class MainGame:
 
-bg_x = 0
-bg = pygame.transform.scale(pygame.image.load('images/bg.png').convert(), (1920, 1080))
+    def __init__(self):
+        self.Enemy = None
+        self.sword_hitbox = None
+        self.player_rect = None
+        self.running = None
+        self.bg = None
+        self.enemies = None
+        self.player = None
+        self.restart_label_rect = None
+        self.restart_label = None
+        self.lose_label = None
+        self.label = None
+        self.screen = None
+        self.clock = None
+        self.res = (GetSystemMetrics(0), GetSystemMetrics(1))
+        self.w = GetSystemMetrics(0)
+        self.h = GetSystemMetrics(1)
+        self.scale_x = self.w / 1920
+        self.scale_y = self.h / 1080
+        self.bg_x = 0
+        self.gameplay = True
+        self.gravity = 10
+        self.is_jumping = False
 
-running = True
-while running:
+    def initGame(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode(self.res, FULLSCREEN, HWSURFACE | DOUBLEBUF | RESIZABLE)
+        pygame.display.set_caption('PygamePlatformer')
+        # icon = pygame.image.load('icon.png')
+        # pygame.display.set_icon(icon)
+        self.clock = pygame.time.Clock()
+        self.label = pygame.font.SysFont('Arial', 50)
+        self.lose_label = self.label.render('Game Over', False, (0, 0, 0))
+        self.restart_label = self.label.render('Restart', True, (0, 0, 0))
+        self.restart_label_rect = self.restart_label.get_rect(topleft=(100, 100))
 
-    if gameplay:
-        screen.blit(bg, (bg_x, 0))
-        screen.blit(bg, (bg_x + w * scale_x, 0))
+        self.player = Player(100, 350, 15, 301, 493)
+        self.enemies = [classes.Enemy(650, 350, 301, 493, 7), classes.Enemy(900, 350, 301, 493, 25)]
 
-        keys = pygame.key.get_pressed()
-        player_rect = player.rect
-        if len(enemies) >= 1:
-            for i in range(len(enemies)):
-                if player.rect.colliderect(enemies[i].rect):
-                    gameplay = False
+        self.bg = pygame.transform.scale(pygame.image.load('images/bg.png').convert(), (1920, 1080))
 
-        if keys[K_a] and player.rect.left > 0:
-            player.stay = False
-            player.move(-player.speed, 0)
-            player.direction = 'left'
-        else:
-            player.stay = True
+    def runGame(self):
+        self.running = True
+        while self.running:
 
-        if keys[K_d] and player.rect.right < w:
-            player.stay = False
-            player.move(player.speed, 0)
-            player.direction = 'right'
+            if self.gameplay:
+                self.screen.blit(self.bg, (self.bg_x, 0))
+                self.screen.blit(self.bg, (self.bg_x + self.w * self.scale_x, 0))
 
-        if keys[K_w] and player.rect.top > 0:
-            if not is_jumping:
-                if keys[pygame.K_w]:
-                    is_jumping = True
+                keys = pygame.key.get_pressed()
+                self.player_rect = self.player.rect
+                if len(self.enemies) >= 1:
+                    for i in range(len(self.enemies)):
+                        if self.player.rect.colliderect(self.enemies[i].rect):
+                            self.gameplay = False
 
-        if keys[K_SPACE]:
-            if player.direction == 'left':
-                sword_hitbox = pygame.Rect(player.rect.midleft[0] - 50, player.rect.midleft[1], 50, 50)
-            if player.direction == 'right':
-                sword_hitbox = pygame.Rect(player.rect.midright[0] + 50, player.rect.midright[1], 50, 50)
-
-        if player.is_attacking:
-            if sword_hitbox.colliderect(Enemy.rect) and Enemy.alive:
-                # Уничтожаем врага
-                Enemy.kill()
-                enemies.pop(enemies.index(Enemy))
-
-        if is_jumping:
-            if gravity >= -10:
-                if gravity > 0:
-                    player.rect.y -= (gravity ** 2) / 2
+                if keys[K_a] and self.player.rect.left > 0:
+                    self.player.stay = False
+                    self.player.move(-self.player.speed, 0)
+                    self.player.direction = 'left'
                 else:
-                    player.rect.y += (gravity ** 2) / 2
-                gravity -= 1
-            else:
-                is_jumping = False
-                gravity = 10
+                    self.player.stay = True
 
-        if keys[K_SPACE]:
-            player.attack()
-        else:
-            player.stop_attack()
-        for Enemy in enemies:
-            Enemy.move()
-            Enemy.draw(screen)
-            Enemy.update()
-            # Если противник мертв, удаляем его из списка
-            if not Enemy.alive:
-                enemies.remove(Enemy)
-        player.update()
-        player.draw(screen)
-        pygame.display.update()
+                if keys[K_d] and self.player.rect.right < self.w:
+                    self.player.stay = False
+                    self.player.move(self.player.speed, 0)
+                    self.player.direction = 'right'
 
-    else:
-        pygame.display.update()
-        screen.fill((255, 255, 255))
-        screen.blit(lose_label, (50, 50))
-        screen.blit(restart_label, restart_label_rect)
-        mouse = pygame.mouse.get_pos()
-        if restart_label_rect.collidepoint(mouse) and pygame.mouse.get_pressed()[0]:
-            gameplay = True
-            player.rect.x = 100
-            for Enemy in enemies:
-                Enemy.kill()
-            enemies = [(classes.Enemy(650, 350, 301, 493, 7)), (classes.Enemy(900, 350, 301, 493, 25))]
+                if keys[K_w] and self.player.rect.top > 0:
+                    if not self.is_jumping:
+                        if keys[pygame.K_w]:
+                            self.is_jumping = True
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-            pygame.quit()
+                if keys[K_SPACE]:
+                    if self.player.direction == 'left':
+                        self.sword_hitbox = pygame.Rect(self.player.rect.midleft[0] - 50, self.player.rect.midleft[1],
+                                                        50, 50)
+                    if self.player.direction == 'right':
+                        self.sword_hitbox = pygame.Rect(self.player.rect.midright[0] + 50, self.player.rect.midright[1],
+                                                        50, 50)
 
-    clock.tick(15)
+                if self.player.is_attacking:
+                    if self.sword_hitbox.colliderect(self.Enemy.rect) and self.Enemy.alive:
+                        # Уничтожаем врага
+                        self.Enemy.kill()
+                        self.enemies.pop(self.enemies.index(self.Enemy))
 
-"""e_walk_right = [
-    pygame.transform.scale(pygame.image.load('images/enemy/walk_right/1.png').convert_alpha(), (40, 70)),
-    pygame.transform.scale(pygame.image.load('images/enemy/walk_right/2.png').convert_alpha(), (40, 70)),
-    pygame.transform.scale(pygame.image.load('images/enemy/walk_right/3.png').convert_alpha(), (40, 70)),
-    pygame.transform.scale(pygame.image.load('images/enemy/walk_right/4.png').convert_alpha(), (40, 70)),
-]
+                if self.is_jumping:
+                    if self.gravity >= -10:
+                        if self.gravity > 0:
+                            self.player.rect.y -= (self.gravity ** 2) / 2
+                        else:
+                            self.player.rect.y += (self.gravity ** 2) / 2
+                        self.gravity -= 1
+                    else:
+                        self.is_jumping = False
+                        self.gravity = 10
 
-e_walk_left = [
-    pygame.transform.scale(pygame.image.load('images/enemy/walk_left/1.png').convert_alpha(), (40, 70)),
-    pygame.transform.scale(pygame.image.load('images/enemy/walk_left/2.png').convert_alpha(), (40, 70)),
-    pygame.transform.scale(pygame.image.load('images/enemy/walk_left/3.png').convert_alpha(), (40, 70)),
-    pygame.transform.scale(pygame.image.load('images/enemy/walk_left/4.png').convert_alpha(), (40, 70)),
-]
+                if keys[K_SPACE]:
+                    self.player.attack()
 
-e_stay = pygame.transform.scale(pygame.image.load('images/enemy/stay/1.png').convert_alpha(), (50, 70))
-
-bg_x = 0
-player_anim_count = 0
-enemy_anim_count = 0
-
-player_speed = 10
-player_x = 150
-player_y = 220
-is_jumping = False
-gravity = 8
-
-enemy_x = 650
-enemy_y = 220
-enemy_speed = 10
-
-label = pygame.font.SysFont('Arial', 50)
-lose_label = label.render('Game Over', False, (0, 0, 0))
-restart_label = label.render('Restart', True, (0, 0, 0))
-restart_label_rect = restart_label.get_rect(topleft=(100, 100))
-sword_width = 32
-sword_height = 32
-sword_hitbox = pygame.Rect(0, 0, sword_width, sword_height)
-
-gameplay = True
-running = True
-killed = False
-while running:
-
-    if gameplay:
-        screen.blit(bg, (bg_x, 0))
-        screen.blit(bg, (bg_x + 700, 0))
-        keys = pygame.key.get_pressed()
-        player_rect = p_walk_left[0].get_rect(topleft=(player_x, player_y))
-        enemy_rect = e_walk_left[0].get_rect(topleft=(enemy_x, enemy_y))
-
-        if player_rect.colliderect(enemy_rect):
-            gameplay = False
-
-
-
-        if enemy_x == 450:
-            flag = True
-        if enemy_x == 650:
-            flag = False
-        if flag:
-            screen.blit(e_walk_right[enemy_anim_count], (enemy_x, enemy_y))
-            enemy_x += enemy_speed
-        else:
-            screen.blit(e_walk_left[enemy_anim_count], (enemy_x, enemy_y))
-            enemy_x -= enemy_speed
-
-        if keys[pygame.K_d]:
-            screen.blit(p_walk_right[player_anim_count], (player_x, player_y))
-            if keys[pygame.K_SPACE]:
-                sword_hitbox.topleft = (player_x + 30, player_y)
-        elif keys[pygame.K_a]:
-            screen.blit(p_walk_left[player_anim_count], (player_x, player_y))
-            if keys[pygame.K_SPACE]:
-                sword_hitbox.topleft = (player_x - 30, player_y)
-        else:
-            screen.blit(p_stay, (player_x, player_y))
-
-        if keys[pygame.K_a] and player_x > 10:
-            player_x -= player_speed
-        elif keys[pygame.K_d] and player_x < 690:
-            player_x += player_speed
-
-        if enemy_anim_count == 3:
-            enemy_anim_count = 0
-        else:
-            enemy_anim_count += 1
-
-        if player_anim_count == 3:
-            player_anim_count = 0
-        else:
-            player_anim_count += 1
-
-        if not is_jumping:
-            if keys[pygame.K_w]:
-                is_jumping = True
-        else:
-            if gravity >= -8:
-                if gravity > 0:
-                    player_y -= (gravity ** 2) / 2
                 else:
-                    player_y += (gravity ** 2) / 2
-                gravity -= 1
+                    self.player.stop_attack()
+                for self.Enemy in self.enemies:
+                    self.Enemy.move()
+                    self.Enemy.draw(self.screen)
+                    self.Enemy.update()
+                    # Если противник мертв, удаляем его из списка
+                    if not self.Enemy.alive:
+                        self.enemies.remove(self.Enemy)
+                self.player.update()
+                self.player.draw(self.screen)
+                self.player.draw_attack(self.screen)
+                pygame.display.update()
+
             else:
-                is_jumping = False
-                gravity = 8
+                pygame.display.update()
+                self.screen.fill((255, 255, 255))
+                self.screen.blit(self.lose_label, (50, 50))
+                self.screen.blit(self.restart_label, self.restart_label_rect)
+                mouse = pygame.mouse.get_pos()
+                if self.restart_label_rect.collidepoint(mouse) and pygame.mouse.get_pressed()[0]:
+                    self.gameplay = True
+                    self.player.rect.x = 100
+                    for self.Enemy in self.enemies:
+                        self.Enemy.kill()
+                    self.enemies = [(classes.Enemy(650, 350, 301, 493, 7)), (classes.Enemy(900, 350, 301, 493, 25))]
 
-        bg_x -= 2
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                    pygame.quit()
 
-        if bg_x == - 700:
-            bg_x = 0
-    else:
-        pygame.display.update()
-        screen.fill((255, 255, 255))
-        screen.blit(lose_label, (50, 50))
-        screen.blit(restart_label, restart_label_rect)
-
-        mouse = pygame.mouse.get_pos()
-        if restart_label_rect.collidepoint(mouse) and pygame.mouse.get_pressed()[0]:
-            gameplay = True
-            player_x = 150
-
-    pygame.display.update()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-
-    clock.tick(15)"""
+            self.clock.tick(15)

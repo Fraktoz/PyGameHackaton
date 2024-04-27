@@ -3,9 +3,10 @@ import main
 
 
 def play():
-    global run, i
-    mainmenu.MainMenu.run = False
-    i = main
+    global game
+    game = main.MainGame()
+    game.initGame()
+    game.runGame()
 
 
 menu = mainmenu.MainMenu()
