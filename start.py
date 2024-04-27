@@ -1,4 +1,16 @@
 import mainmenu
 import main
-import classes
+
+
+def play():
+    global run, i
+    mainmenu.MainMenu.run = False
+    i = main
+
+
+menu = mainmenu.MainMenu()
+menu.initGame()
+menu.runGame()
+
+
 
