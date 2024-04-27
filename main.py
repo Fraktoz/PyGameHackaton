@@ -24,46 +24,6 @@ lose_label = label.render('Game Over', False, (0, 0, 0))
 restart_label = label.render('Restart', True, (0, 0, 0))
 restart_label_rect = restart_label.get_rect(topleft=(100, 100))
 
-
-def scale(surface):
-    img = surface
-    return pygame.transform.scale(img, (50, 50))
-
-
-    def move(self):
-        if self.direction == 'right':
-            self.rect.x += self.speed
-            # Если враг достиг правой границы, меняем направление на лево
-            if self.rect.right >= 1800:
-                self.direction = 'left'
-        elif self.direction == 'left':
-            self.rect.x -= self.speed
-            # Если враг достиг левой границы, меняем направление на право
-            if self.rect.left <= 400:
-                self.direction = 'right'
-
-    def animation(self):
-        if self.direction == 'right':
-            self.frame_index = (self.frame_index + 1) % len(self.walk_right)
-        elif self.direction == 'left':
-            self.frame_index = (self.frame_index + 1) % len(self.walk_left)
-
-    def draw(self, screen):
-
-        if self.direction == 'right':
-            screen.blit(self.walk_right[self.frame_index], (self.rect.x, self.rect.y))
-        elif self.direction == 'left':
-            screen.blit(self.walk_left[self.frame_index], (self.rect.x, self.rect.y))
-
-    def kill(self):
-        # Метод для уничтожения врага
-        self.alive = False
-
-    def update(self):
-        self.animation()
-
-
-
 player = Player(100, 350, 15, 301, 493)
 enemies = [Enemy(650, 350, 301, 493, 7), Enemy(900, 350, 301, 493, 25)]
 
@@ -108,10 +68,10 @@ while running:
                 sword_hitbox = pygame.Rect(player.rect.midright[0] + 50, player.rect.midright[1], 50, 50)
 
         if player.is_attacking:
-                if sword_hitbox.colliderect(Enemy.rect) and Enemy.alive:
-                    # Уничтожаем врага
-                    Enemy.kill()
-                    enemies.pop(enemies.index(Enemy))
+            if sword_hitbox.colliderect(Enemy.rect) and Enemy.alive:
+                # Уничтожаем врага
+                Enemy.kill()
+                enemies.pop(enemies.index(Enemy))
 
         if is_jumping:
             if gravity >= -10:
@@ -150,9 +110,7 @@ while running:
             player.rect.x = 100
             for Enemy in enemies:
                 Enemy.kill()
-            enemies = [(classes.Enemy(650, 350, 301, 493, 7)),(classes.Enemy(900, 350, 301, 493, 25))]
-
-
+            enemies = [(classes.Enemy(650, 350, 301, 493, 7)), (classes.Enemy(900, 350, 301, 493, 25))]
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -160,7 +118,6 @@ while running:
             pygame.quit()
 
     clock.tick(15)
-
 
 """e_walk_right = [
     pygame.transform.scale(pygame.image.load('images/enemy/walk_right/1.png').convert_alpha(), (40, 70)),

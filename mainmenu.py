@@ -1,10 +1,8 @@
 import pygame
-from pygame.locals import *
-from win32api import GetSystemMetrics
 import pygame_widgets
 from pygame_widgets.button import Button
 from pygame_widgets.toggle import Toggle
-
+from main import *
 
 pygame.init()
 
@@ -22,6 +20,7 @@ font = pygame.font.SysFont('arial', 64)
 
 text = font.render('', True, (255, 255, 255))
 text_rect = (450, 200)
+run = True
 
 PlayButton = Button(
     screen,
@@ -143,7 +142,9 @@ def scale(surface):
 
 
 def play():
-    ...
+    global run
+    run = False
+
 
 
 def toggleMusic():
@@ -155,7 +156,7 @@ def toggleMusic():
 
 
 def main_menu():
-    while True:
+    while run:
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
@@ -171,5 +172,9 @@ def main_menu():
         screen.blit(text, text_rect)
 
 
-
+events = pygame.event.get()
+for event in events:
+    if event.type == pygame.QUIT:
+        pygame.quit()
+        quit()
 main_menu()
