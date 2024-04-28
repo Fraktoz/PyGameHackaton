@@ -44,8 +44,9 @@ class MainGame:
         self.restart_label = self.label.render('Restart', True, (0, 0, 0))
         self.restart_label_rect = self.restart_label.get_rect(topleft=(100, 100))
 
-        self.player = Player(100, 350, 15, 301, 493)
-        self.enemies = [classes.Enemy(650, 350, 301, 493, 7), classes.Enemy(900, 350, 301, 493, 25)]
+        self.player = Player(150, 400, 15, 112, 112)
+        self.enemies = [classes.Enemy(650, 350, 112, 112, 3), classes.Enemy(900, 350, 112, 112, 3)]
+        self.platforms = [classes.Platform(0, 800, 260, 60), classes.Platform(360, 650, 260, 60), classes.Platform(720, 650, 260, 60)]
 
         self.bg = pygame.transform.scale(pygame.image.load('images/bg.png').convert(), (1920, 1080))
 
@@ -76,35 +77,29 @@ class MainGame:
                     self.player.move(self.player.speed, 0)
                     self.player.direction = 'right'
 
-                if keys[K_w] and self.player.rect.top > 0:
-                    if not self.is_jumping:
-                        if keys[pygame.K_w]:
-                            self.is_jumping = True
+                if keys[K_w] and self.player.on_ground == True:
+                    self.player.y_velocity = -14
+                    self.player.on_ground = False
+
+                self.player.y_velocity += 0.5
+
 
                 if keys[K_SPACE]:
                     if self.player.direction == 'left':
-                        self.sword_hitbox = pygame.Rect(self.player.rect.midleft[0] - 50, self.player.rect.midleft[1],
-                                                        50, 50)
+                        self.sword_hitbox = pygame.Rect(self.player.rect.midleft[0] - 30, self.player.rect.midleft[1],
+                                                        25, 25)
                     if self.player.direction == 'right':
-                        self.sword_hitbox = pygame.Rect(self.player.rect.midright[0] + 50, self.player.rect.midright[1],
-                                                        50, 50)
+                        self.sword_hitbox = pygame.Rect(self.player.rect.midright[0] + 30, self.player.rect.midright[1],
+                                                        25, 25)
 
                 if self.player.is_attacking:
-                    if self.sword_hitbox.colliderect(self.Enemy.rect) and self.Enemy.alive:
-                        # Уничтожаем врага
-                        self.Enemy.kill()
-                        self.enemies.pop(self.enemies.index(self.Enemy))
-
-                if self.is_jumping:
-                    if self.gravity >= -10:
-                        if self.gravity > 0:
-                            self.player.rect.y -= (self.gravity ** 2) / 2
-                        else:
-                            self.player.rect.y += (self.gravity ** 2) / 2
-                        self.gravity -= 1
-                    else:
-                        self.is_jumping = False
-                        self.gravity = 10
+                    if len(self.enemies) >= 1:
+                        for self.Enemy in self.enemies:
+                            if self.sword_hitbox.colliderect(self.Enemy.rect) and self.Enemy.alive:
+                                # Уничтожаем врага
+                                self.Enemy.kill()
+                                self.enemies.pop(self.enemies.index(self.Enemy))
+                                break
 
                 if keys[K_SPACE]:
                     self.player.attack()
@@ -121,7 +116,10 @@ class MainGame:
                 self.player.update()
                 self.player.draw(self.screen)
                 self.player.draw_attack(self.screen)
+                for self.Platform in self.platforms:
+                    self.Platform.draw(self.screen)
                 pygame.display.update()
+                Platform.check_collision_platforms(self.player, self.platforms)
 
             else:
                 pygame.display.update()
@@ -134,11 +132,11 @@ class MainGame:
                     self.player.rect.x = 100
                     for self.Enemy in self.enemies:
                         self.Enemy.kill()
-                    self.enemies = [(classes.Enemy(650, 350, 301, 493, 7)), (classes.Enemy(900, 350, 301, 493, 25))]
+                    self.enemies = [(classes.Enemy(650, 350, 112, 112, 3)), (classes.Enemy(900, 350, 112, 112, 3))]
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
                     pygame.quit()
 
-            self.clock.tick(15)
+            self.clock.tick(30)

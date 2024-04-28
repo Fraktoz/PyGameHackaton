@@ -55,12 +55,15 @@ class Player:
         self.is_attacking = False
         self.rect = pygame.Rect(player_x, player_y, width, height)
         self.speed = player_speed
+        self.y_velocity = 0
+        self.jump_speed = 0
         self.x = player_x
         self.y = player_y
         self.direction = 'right'
         self.stay = True
         self.frame_index = 0
         self.attack_index = 0
+        self.on_ground = False
         self.walk_right = [
             pygame.image.load('images/player/walk_right/1.png').convert_alpha(),
             pygame.image.load('images/player/walk_right/2.png').convert_alpha(),
@@ -115,3 +118,44 @@ class Player:
 
     def update(self):
         self.animation()
+        self.rect.y += self.y_velocity
+
+class Platform:
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.rect = pygame.Rect(x, y, width, height)
+        self.image = pygame.image.load('images/platform.png').convert_alpha()
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+    def check_collision_platforms(object, platform_list):
+        # перебираем все платформы из списка (не группы спрайтов)
+        for platform in platform_list:
+            if object.rect.colliderect(platform.rect):
+                if object.y_velocity > 0:  # Если спрайт падает
+                    # меняем переменную-флаг
+                    object.on_ground = True
+                    # ставим его поверх платформы и сбрасываем скорость по оси Y
+                    object.rect.bottom = platform.rect.top
+                    object.y_velocity = 0
+                elif object.y_velocity < 0:  # Если спрайт движется вверх
+                    # ставим спрайт снизу платформы
+                    object.rect.top = platform.rect.bottom
+                    object.y_velocity = 0
+                elif object.speed > 0:  # Если спрайт движется вправо
+                    # ставим спрайт слева от платформы
+                    object.rect.right = platform.rect.left
+                elif object.speed < 0:  # Если спрайт движется влево
+                    # ставим спрайт справа от платформы
+                    object.rect.left = platform.rect.right
+
+class Collectible:
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.rect = pygame.Rect(x, y, width, height)
+        self.image = pygame.image.load('images/platform.png').convert_alpha()
