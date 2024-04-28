@@ -13,7 +13,7 @@ Sky Knight
         pygame-widgets 1.1.5  #  python -m pip install pygame-widgets
         pypiwin32      223  #  python -m pip install pypiwin32
         pywin32        306  #  python -m pip install --upgrade pywin32
-    После чего запускаете файл "[text](start.py)"
+    После чего запускаете файл "[start](start.py)"
 
 
 Небольшые вводные данные по игре:
